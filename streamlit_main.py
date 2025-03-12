@@ -38,8 +38,8 @@ def recommend_food(df, calories_prompt_per100=None, ingredient_prompt=None, user
             df.loc[df['User type'].str.lower().str.contains(user_type, na=False), 'Ranking Score'] += 1
     if taste_prompt:
         tastes = [t.strip().lower() for taste in taste_prompt.split(',')]
-        for taste in tastes:
-            df.loc[df['Taste'].str.lower().str.contains(taste, na=False), 'Ranking Score'] += 1
+    else:
+        tastes = []
 
     if negative_prompt:
         if 'Ingredient' in negative_prompt and negative_prompt['Ingredient']:
