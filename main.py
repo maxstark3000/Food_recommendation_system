@@ -28,7 +28,7 @@ def load_data(excel_file):
         st.stop()
 
 # File path for the Excel data
-excel_file_path = food-ver2.xlsx"
+excel_file_path = "food-ver2.xlsx"
 df = load_data(excel_file_path)
 
 # Streamlit UI
