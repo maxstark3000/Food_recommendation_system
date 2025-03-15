@@ -187,31 +187,37 @@ elif solution == "Basic Filtering":
     
     # Step 1: Filter by Ingredients
     st.subheader("Step 1: Filter by Ingredients")
-    ingredient_options = df_filtered['Ingredients'].dropna().unique().tolist()
-    selected_ingredients = st.multiselect("Select ingredients:", ingredient_options)
+    user_ingredients = st.text_input("Enter ingredients (comma-separated, e.g., beef, cheese):", key="ingredients_input")
+    selected_ingredients = [ing.strip().lower() for ing in user_ingredients.split(',')] if user_ingredients else []
     if selected_ingredients:
-        df_filtered = df_filtered[df_filtered['Ingredients'].isin(selected_ingredients)]
+        df_filtered = df_filtered[df_filtered['Ingredients'].str.lower().str.contains('|'.join(selected_ingredients), na=False)]
     
     # Step 2: Filter by User Type
     st.subheader("Step 2: Filter by User Type")
-    user_type_options = df_filtered['User type'].dropna().unique().tolist()
-    selected_user_types = st.multiselect("Select user types:", user_type_options)
+    user_types = st.text_input("Enter user types (comma-separated, e.g., gain, normal, athlete):", key="user_types_input")
+    selected_user_types = [ut.strip().lower() for ut in user_types.split(',')] if user_types else []
     if selected_user_types:
-        df_filtered = df_filtered[df_filtered['User type'].isin(selected_user_types)]
+        df_filtered = df_filtered[df_filtered['User type'].str.lower().str.contains('|'.join(selected_user_types), na=False)]
     
     # Step 3: Filter by Taste
     st.subheader("Step 3: Filter by Taste")
-    taste_options = df_filtered['Taste'].dropna().unique().tolist()
-    selected_tastes = st.multiselect("Select tastes:", taste_options)
+    user_tastes = st.text_input("Enter taste preferences (comma-separated, e.g., rich, sweet):", key="tastes_input")
+    selected_tastes = [t.strip().lower() for t in user_tastes.split(',')] if user_tastes else []
     if selected_tastes:
-        df_filtered = df_filtered[df_filtered['Taste'].isin(selected_tastes)]
+        df_filtered = df_filtered[df_filtered['Taste'].str.lower().str.contains('|'.join(selected_tastes), na=False)]
     
     # Step 4: Filter by Calories (Optional)
     st.subheader("Step 4: Filter by Calories (Optional)")
     desired_calories = st.number_input("Enter your desired calorie intake per serving (optional)", min_value=50, max_value=1000, value=200, step=50)
+    
+    # Calculate adjusted serving size, handling potential division by zero
     if desired_calories:
+        df_filtered['Adjusted Serving Size (grams)'] = df_filtered.apply(
+            lambda row: f"{math.ceil(desired_calories / row['Calories/Serving'])} grams"
+            if row['Calories/Serving'] != 0 else "N/A",
+            axis=1
+        )
         df_filtered = df_filtered[df_filtered['Calories/Serving'] <= desired_calories]
-        df_filtered['Adjusted Serving Size (grams)'] = (desired_calories / df_filtered['Calories/Serving']).apply(math.ceil).astype(str) + " grams"
     
     # Display the filtered DataFrame
     st.subheader("Recommended Foods")
