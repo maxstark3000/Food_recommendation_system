@@ -70,17 +70,25 @@ def tag_based_ranking(df, calories_prompt_per100=None, ingredient_prompt=None, u
 
 def basic_step_by_step_filtering(df, calories_threshold=200):
     """
-    Basic Step-by-Step Filtering: Follows a strict step-by-step filtering process.
+    Basic Step-by-Step Filtering: Sequentially filters based on ingredients, calories, taste, and user type.
     """
+    # Step 1: Filter by Calories
     filtered_df = df[df['Calories/Serving'] > calories_threshold]
     
+    # Step 2: Filter by Ingredients
+    if 'Ingredients' in df.columns:
+        common_ingredient = filtered_df['Ingredients'].mode()[0]
+        filtered_df = filtered_df[filtered_df['Ingredients'] == common_ingredient]
+    
+    # Step 3: Filter by Taste
     if 'Taste' in df.columns:
-        unique_tastes = filtered_df['Taste'].unique()
-        for taste in unique_tastes:
-            temp_df = filtered_df[filtered_df['Taste'] == taste]
-            if not temp_df.empty:
-                filtered_df = temp_df
-                break
+        common_taste = filtered_df['Taste'].mode()[0]
+        filtered_df = filtered_df[filtered_df['Taste'] == common_taste]
+    
+    # Step 4: Filter by User Type
+    if 'User type' in df.columns:
+        common_user_type = filtered_df['User type'].mode()[0]
+        filtered_df = filtered_df[filtered_df['User type'] == common_user_type]
     
     return filtered_df.reset_index(drop=True)
 
