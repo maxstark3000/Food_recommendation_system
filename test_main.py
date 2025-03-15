@@ -34,9 +34,9 @@ df = load_data(excel_file_path)
 st.title("Food Recommendation App")
 st.subheader("Choose Your Recommendation Method")
 
-solution = st.radio("Select a method:", ["Solution 1: Basic Recommendation", "Solution 2: Advanced with Prioritization"])
+solution = st.radio("Select a method:", ["Solution 1: tag-based ranking", "Solution 2: basic filtering"])
 
-if solution == "Solution 1: Basic Recommendation":
+if solution == "Solution 2: Basic filtering":
     def recommend_food_basic(df, ingredient_prompt=None, user_type_prompt=None, taste_prompt=None, negative_prompt=None, top_n=5, desired_calories=None):
         """Basic food recommendation system."""
         df['Ranking Score'] = 0
@@ -63,9 +63,9 @@ if solution == "Solution 1: Basic Recommendation":
 
         return ranked_df
 
-    user_ingredient_prompt = st.text_input("Enter preferred ingredients:")
-    user_user_type_prompt = st.text_input("Enter your user type:")
-    user_taste_prompt = st.text_input("Enter preferred tastes:")
+    user_ingredient_prompt = st.text_input("Enter preferred ingredients (cheese, milk, beef, etc):")
+    user_user_type_prompt = st.text_input("Enter your user type (normal, gain, loss, athlete):")
+    user_taste_prompt = st.text_input("Enter preferred tastes (sweet, savory, rich, etc):")
     user_desired_calories = st.number_input("Enter desired calories per serving:", value=None, format="%d")
 
     if st.button("Recommend Foods (Basic)"):
@@ -74,7 +74,7 @@ if solution == "Solution 1: Basic Recommendation":
         )
         st.dataframe(recommended_foods)
 
-elif solution == "Solution 2: Advanced with Prioritization":
+elif solution == "Solution 2: tag-based ranking":
     def recommend_food_advanced(df, ingredient_prompt=None, user_type_prompt=None, taste_prompt=None, negative_prompt=None, 
                                 top_n=5, desired_calories=None, ingredient_priority=1, user_type_priority=1, taste_priority=1):
         """Advanced recommendation with prioritization."""
