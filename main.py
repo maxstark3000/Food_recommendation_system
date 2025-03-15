@@ -5,6 +5,9 @@ import numpy as np
 import math
 import os
 
+# Set the page configuration at the very beginning
+st.set_page_config(page_title="Food Recommendation App", layout="wide")
+
 # Configuration for Pandas display options
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', None)
@@ -25,11 +28,10 @@ def load_data(excel_file):
         st.stop()
 
 # File path for the Excel data
-excel_file_path = "food-ver2.xlsx"
+excel_file_path = "/mnt/data/food-ver2.xlsx"
 df = load_data(excel_file_path)
 
 # Streamlit UI
-st.set_page_config(page_title="Food Recommendation App", layout="wide")
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Tag-Based Ranking", "Basic Step-by-Step Filtering"])
 
@@ -84,17 +86,15 @@ elif page == "Basic Step-by-Step Filtering":
     # Step 2: Filter ingredients
     df_filtered = df[df['Ingredients'].isin(selected_ingredients)]
     
-    # Step 3: Filter by Calories > 200
-    df_filtered = df_filtered[df_filtered['Calories/Serving'] > 200]
+    # Step 3: Allow user to input desired calories and adjust portion sizes
+    desired_calories = st.number_input("Enter your desired calorie intake per serving", min_value=50, max_value=1000, value=200, step=50)
+    df_filtered = df_filtered[df_filtered['Calories/Serving'] <= desired_calories]
+    df_filtered['Adjusted Serving Size (grams)'] = (desired_calories / df_filtered['Calories/Serving']).apply(math.ceil).astype(str) + " grams"
     
     # Step 4: Additional Filtering (e.g., avoiding 'rich' foods)
     avoid_rich = st.checkbox("Avoid rich foods?")
     if avoid_rich:
         df_filtered = df_filtered[~df_filtered['User type'].str.contains('rich', case=False, na=False)]
-    
-    # Step 5: Allow user to input desired calories and adjust portion sizes
-    desired_calories = st.number_input("Enter your desired calorie intake per serving", min_value=50, max_value=1000, value=200, step=50)
-    df_filtered['Adjusted Serving Size (grams)'] = (desired_calories / df_filtered['Calories/Serving']).apply(math.ceil).astype(str) + " grams"
     
     # Display Final Result
     st.subheader("Final Result")
