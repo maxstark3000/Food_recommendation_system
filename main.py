@@ -67,7 +67,7 @@ def recommend_food(df, calories_prompt_per100=None, ingredient_prompt=None, user
             for neg_user_type in neg_user_types:
                 df = df[~df['User type'].str.lower().str.contains(neg_user_type, na=False)]
         if 'Taste' in negative_prompt and negative_prompt['Taste']:
-            neg_tastes = [t.strip().lower() for ing in negative_prompt['Taste'].split(',')]
+            neg_tastes = [t.strip().lower() for t in negative_prompt['Taste'].split(',')]
             for neg_taste in neg_tastes:
                 df = df[~df['Taste'].str.lower().str.contains(neg_taste, na=False)]
 
