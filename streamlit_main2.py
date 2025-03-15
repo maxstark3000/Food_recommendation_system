@@ -83,7 +83,7 @@ def recommend_food(df, calories_prompt_per100=None, ingredient_prompt=None, user
     return ranked_df
 
 # File path for the Excel data
-excel_file_path = 'food.xlsx'
+excel_file_path = 'food-ver2.xlsx'
 
 # Load data
 df = load_data(excel_file_path)
