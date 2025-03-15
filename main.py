@@ -83,19 +83,28 @@ elif page == "Basic Step-by-Step Filtering":
     ingredient_options = df['Ingredients'].dropna().unique().tolist()
     selected_ingredients = st.multiselect("Select ingredients you want to use", ingredient_options)
     
-    # Step 2: Filter ingredients
-    df_filtered = df[df['Ingredients'].isin(selected_ingredients)]
+    # Step 2: User selects user type
+    user_type_options = df['User type'].dropna().unique().tolist()
+    selected_user_type = st.multiselect("Select user type", user_type_options)
     
-    # Step 3: Allow user to input desired calories and adjust portion sizes
+    # Step 3: User selects taste
+    taste_options = df['Taste'].dropna().unique().tolist()
+    selected_taste = st.multiselect("Select taste preference", taste_options)
+    
+    # Step 4: Filter based on selections
+    df_filtered = df[df['Ingredients'].isin(selected_ingredients)]
+    df_filtered = df_filtered[df_filtered['User type'].isin(selected_user_type)]
+    df_filtered = df_filtered[df_filtered['Taste'].isin(selected_taste)]
+    
+    # Step 5: Allow user to input desired calories and adjust portion sizes
     desired_calories = st.number_input("Enter your desired calorie intake per serving", min_value=50, max_value=1000, value=200, step=50)
     df_filtered = df_filtered[df_filtered['Calories/Serving'] <= desired_calories]
     df_filtered['Adjusted Serving Size (grams)'] = (desired_calories / df_filtered['Calories/Serving']).apply(math.ceil).astype(str) + " grams"
     
-    # Step 4: Additional Filtering (e.g., avoiding 'rich' foods)
-    avoid_rich = st.checkbox("Avoid rich foods?")
-    if avoid_rich:
-        df_filtered = df_filtered[~df_filtered['User type'].str.contains('rich', case=False, na=False)]
-    
     # Display Final Result
     st.subheader("Final Result")
     st.dataframe(df_filtered)
+    
+    # Recommend button remains visible to update results dynamically
+    if st.button("Recommend food"):
+        st.dataframe(df_filtered)
