@@ -101,10 +101,6 @@ elif page == "Basic Step-by-Step Filtering":
     df_filtered = df_filtered[df_filtered['Calories/Serving'] <= desired_calories]
     df_filtered['Adjusted Serving Size (grams)'] = (desired_calories / df_filtered['Calories/Serving']).apply(math.ceil).astype(str) + " grams"
     
-    # Display Final Result
-    st.subheader("Final Result")
-    st.dataframe(df_filtered)
-    
     # Recommend button remains visible to update results dynamically
     if st.button("Recommend food"):
         st.dataframe(df_filtered)
