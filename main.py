@@ -61,15 +61,17 @@ def recommend_food(df, calories_prompt_per100=None, ingredient_prompt=None, user
         if 'Ingredient' in negative_prompt and negative_prompt['Ingredient']:
             neg_ingredients = [ing.strip().lower() for ing in negative_prompt['Ingredient'].split(',')]
             for neg_ingredient in neg_ingredients:
-                df = df[~df['Ingredients'].str.lower().str.contains(neg_ingredient, na=False)]
+                df = df[~df['Ingredients'].astype(str).str.lower().str.contains(neg_ingredient, na=False)]
+        
         if 'User Type' in negative_prompt and negative_prompt['User Type']:
-            neg_user_types = [ut.strip().lower() for ut in user_type_prompt['User Type'].split(',')]
+            neg_user_types = [ut.strip().lower() for ut in negative_prompt['User Type'].split(',')]
             for neg_user_type in neg_user_types:
-                df = df[~df['User type'].str.lower().str.contains(neg_user_type, na=False)]
+                df = df[~df['User type'].astype(str).str.lower().str.contains(neg_user_type, na=False)]
+        
         if 'Taste' in negative_prompt and negative_prompt['Taste']:
             neg_tastes = [t.strip().lower() for t in negative_prompt['Taste'].split(',')]
             for neg_taste in neg_tastes:
-                df = df[~df['Taste'].str.lower().str.contains(neg_taste, na=False)]
+                df = df[~df['Taste'].astype(str).str.lower().str.contains(neg_taste, na=False)]
 
     ranked_df = df.sort_values(by='Ranking Score', ascending=False).reset_index(drop=True)
     columns_to_drop = ['No'] + ['Serving'] + ['Calories']
