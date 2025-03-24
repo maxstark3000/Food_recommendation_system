@@ -218,23 +218,34 @@ elif solution == "Basic Filtering":
         # Calculate adjusted serving size, handling potential division by zero
 
         
+
         if desired_calories:
             # Define the calorie range
             lower_bound = desired_calories - 50
             upper_bound = desired_calories + 50
 
-            # Apply the adjusted serving size calculation first
-            df_filtered['Adjusted Serving Size (grams)'] = df_filtered.apply(
-                lambda row: f"{math.ceil(desired_calories / row['Calories/Serving'])} grams"
-                if row['Calories/Serving'] != 0 else "N/A",
-                axis=1
-            )
-
-            # Filter the DataFrame based on the calorie range
+            # Filter the DataFrame first to ensure it's not empty before applying adjustments
             df_filtered = df_filtered[
                 (df_filtered['Calories/Serving'] >= lower_bound) & 
                 (df_filtered['Calories/Serving'] <= upper_bound)
             ]
+
+            if not df_filtered.empty:  # Apply the adjustment only if there are valid rows
+                df_filtered = df_filtered.copy()  # Avoid SettingWithCopyWarning
+                df_filtered['Adjusted Serving Size (grams)'] = df_filtered.apply(
+                    lambda row: f"{math.ceil(desired_calories / row['Calories/Serving'])} grams"
+                    if row['Calories/Serving'] != 0 else "N/A",
+                    axis=1
+                )
+
+        # Display the filtered DataFrame (check if it's empty)
+        st.subheader("Recommended Foods")
+
+        if df_filtered.empty:
+            st.warning("No foods match your criteria. Try adjusting your filters.")
+        else:
+            st.dataframe(df_filtered)
+
 
         # Display the filtered DataFrame
         st.subheader("Recommended Foods")
