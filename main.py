@@ -217,18 +217,25 @@ elif solution == "Basic Filtering":
         
         # Calculate adjusted serving size, handling potential division by zero
 
+        
         if desired_calories:
+            # Define the calorie range
             lower_bound = desired_calories - 50
             upper_bound = desired_calories + 50
-            df_filtered = df_filtered[(df_filtered['Calories/Serving'] >= lower_bound) & (df_filtered['Calories/Serving'] <= upper_bound)]
-            
-            # Adjust serving size calculation
+
+            # Apply the adjusted serving size calculation first
             df_filtered['Adjusted Serving Size (grams)'] = df_filtered.apply(
                 lambda row: f"{math.ceil(desired_calories / row['Calories/Serving'])} grams"
                 if row['Calories/Serving'] != 0 else "N/A",
                 axis=1
             )
-        
+
+            # Filter the DataFrame based on the calorie range
+            df_filtered = df_filtered[
+                (df_filtered['Calories/Serving'] >= lower_bound) & 
+                (df_filtered['Calories/Serving'] <= upper_bound)
+            ]
+
         # Display the filtered DataFrame
         st.subheader("Recommended Foods")
         st.dataframe(df_filtered)
