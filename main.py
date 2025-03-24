@@ -216,13 +216,18 @@ elif solution == "Basic Filtering":
             df_filtered = df_filtered[df_filtered['Taste'].str.lower().str.contains('|'.join(selected_tastes), na=False)]
         
         # Calculate adjusted serving size, handling potential division by zero
+
         if desired_calories:
+            lower_bound = desired_calories - 50
+            upper_bound = desired_calories + 50
+            df_filtered = df_filtered[(df_filtered['Calories/Serving'] >= lower_bound) & (df_filtered['Calories/Serving'] <= upper_bound)]
+            
+            # Adjust serving size calculation
             df_filtered['Adjusted Serving Size (grams)'] = df_filtered.apply(
                 lambda row: f"{math.ceil(desired_calories / row['Calories/Serving'])} grams"
                 if row['Calories/Serving'] != 0 else "N/A",
                 axis=1
             )
-            df_filtered = df_filtered[df_filtered['Calories/Serving'] <= desired_calories]
         
         # Display the filtered DataFrame
         st.subheader("Recommended Foods")
