@@ -220,13 +220,22 @@ elif solution == "Basic Filtering":
         
 
         if desired_calories:
-                df_filtered['Adjusted Serving Size (grams)'] = df_filtered.apply(
-                    lambda row: f"{math.ceil(desired_calories / row['Calories/Serving'])} grams"
-                    if row['Calories/Serving'] != 0 else "N/A",
-                    axis=1
-                )
-                df_filtered = df_filtered[df_filtered['Calories/Serving'] <= desired_calories]
-            
+            # Define the calorie range
+            lower_bound = desired_calories - 50
+            upper_bound = desired_calories + 50
+
+            # Calculate adjusted serving size first
+            df_filtered['Adjusted Serving Size (grams)'] = df_filtered.apply(
+                lambda row: f"{math.ceil(desired_calories / row['Calories/Serving'])} grams"
+                if row['Calories/Serving'] != 0 else "N/A",
+                axis=1
+            )
+
+            # Apply calorie range filter
+            df_filtered = df_filtered[
+                (df_filtered['Calories/Serving'] >= lower_bound) & 
+                (df_filtered['Calories/Serving'] <= upper_bound)
+            ]           
         # Display the filtered DataFrame
         st.subheader("Recommended Foods")
         st.dataframe(df_filtered)
